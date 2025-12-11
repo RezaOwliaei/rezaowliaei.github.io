@@ -6,153 +6,51 @@
     <meta name="description" content="Reza Owliaei's blog - Exploring software development, TypeScript, clean code, and software architecture.">
     <meta name="keywords" content="Reza Owliaei, Software Development, TypeScript, Clean Code, Programming Blog">
     <meta name="author" content="Reza Owliaei">
-    <title>Reza Owliaei - Software Development Blog</title>
+    <title>Reza Owliaei</title>
     
     <link rel="stylesheet" href="./styles/main.css">
     
     <style>
-        .header {
-            margin-bottom: 3rem;
-            text-align: center;
+        /* Homepage Specific Adjustments */
+        .home-header {
+            margin: 80px 0 64px;
         }
-
-        .header__title {
-            font-size: clamp(2.5rem, 4vw + 1.5rem, 3.5rem);
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #ffffff 0%, var(--accent) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        
+        .home-header h1 {
+            margin-bottom: 16px;
+            color: var(--md-sys-color-on-surface);
         }
-
-        .header__subtitle {
-            color: var(--muted);
-            font-size: 1.2rem;
-            font-weight: 400;
+        
+        .home-header p {
+            color: var(--md-sys-color-on-surface-variant);
+            max-width: 600px;
         }
 
         .posts-grid {
             display: grid;
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .post-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 2rem;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: block;
-        }
-
-        .post-card:hover {
-            border-color: var(--accent);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            transform: translateY(-2px);
-        }
-
-        .post-card__meta {
-            display: flex;
-            gap: 0.6rem;
-            align-items: center;
-            margin-bottom: 0.75rem;
-        }
-
-        .post-card__date {
-            font-size: 0.9rem;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 600;
-        }
-
-        .post-card__title {
-            font-size: 1.8rem;
-            color: #ffffff;
-            margin: 0 0 0.75rem;
-            line-height: 1.2;
-        }
-
-        .post-card__description {
-            color: var(--text);
-            margin-bottom: 1rem;
-            line-height: 1.6;
-        }
-
-        .post-card__tags {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .post-card__tag {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.3rem 0.65rem;
-            border-radius: 999px;
-            background: var(--pill-bg);
-            color: var(--text);
-            font-size: 0.85rem;
-            border: 1px solid var(--border);
-            font-weight: 500;
+            gap: 16px;
         }
 
         .empty-state {
             text-align: center;
-            padding: 4rem 2rem;
-            color: var(--muted);
-        }
-
-        .empty-state__icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .footer {
-            margin-top: 4rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border);
-            text-align: center;
-            color: var(--muted);
-            font-size: 0.9rem;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: var(--muted);
-        }
-
-        @media (max-width: 720px) {
-            .header {
-                margin-bottom: 2rem;
-            }
-
-            .post-card {
-                padding: 1.5rem;
-            }
-
-            .post-card__title {
-                font-size: 1.5rem;
-            }
+            padding: 64px 0;
+            color: var(--md-sys-color-on-surface-variant);
         }
     </style>
 </head>
 <body>
     <main class="page">
-        <header class="header">
-            <h1 class="header__title">Reza Owliaei</h1>
-            <p class="header__subtitle">Software Development & Architecture</p>
+        <header class="home-header">
+            <h1 class="display-medium">Reza Owliaei</h1>
+            <p class="headline-small">Exploring software architecture, design systems, and the art of clean code.</p>
         </header>
 
         <section id="posts-container" class="posts-grid">
-            <div class="loading">Loading posts...</div>
+            <div class="empty-state body-large">Loading...</div>
         </section>
 
         <footer class="footer">
-            <p>&copy; 2025 Reza Owliaei. All rights reserved.</p>
+            <p>&copy; 2025 Reza Owliaei</p>
         </footer>
     </main>
 
@@ -163,10 +61,10 @@
             "posts": [
                 {
                     "id": "helper_composition",
-                    "title": "Beyond the Magic: A Beginner's Guide to Helper Functions and Composition",
+                    "title": "Beyond the Magic: Helper Functions vs Decorators",
                     "date": "2025-12-11",
-                    "description": "Master the fundamentals of explicit code structure in TypeScript by exploring helper functions and composition patterns as robust alternatives to decorators.",
-                    "tags": ["TypeScript", "Clean Code", "Helper Functions", "Object Composition", "Class Composition"],
+                    "description": "Master explicit code structure in TypeScript by exploring composition patterns as alternatives to magic.",
+                    "tags": ["TypeScript", "Clean Code", "Composition"],
                     "url": "./posts/helper_composition.html"
                 }
             ]
@@ -179,61 +77,45 @@
             try {
                 let data = postsData;
                 
-                // Try to fetch from JSON file (works when served via HTTP/HTTPS)
-                // Falls back to embedded data for file:// protocol
+                // Try to fetch from JSON file (fails gracefully on file://)
                 try {
                     const response = await fetch('./posts-manifest.json');
                     if (response.ok) {
                         data = await response.json();
                     }
-                } catch (fetchError) {
-                    // Use embedded data - this is expected for file:// protocol
-                    console.log('Using embedded posts data (file:// protocol or fetch failed)');
+                } catch (e) {
+                    console.log('Using embedded posts data');
                 }
                 
                 if (!data.posts || data.posts.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
-                            <div class="empty-state__icon">📝</div>
-                            <p>No posts yet. Check back soon!</p>
+                            <p class="headline-small">No posts yet.</p>
                         </div>
                     `;
                     return;
                 }
                 
-                // Sort posts by date (newest first)
                 const sortedPosts = data.posts.sort((a, b) => 
                     new Date(b.date) - new Date(a.date)
                 );
                 
-                // Generate post cards
                 container.innerHTML = sortedPosts.map(post => `
-                    <a href="${post.url}" class="post-card">
-                        <div class="post-card__meta">
-                            <span class="post-card__date">${formatDate(post.date)}</span>
-                        </div>
-                        <h2 class="post-card__title">${post.title}</h2>
-                        <p class="post-card__description">${post.description}</p>
-                        <div class="post-card__tags">
-                            ${post.tags.map(tag => `
-                                <span class="post-card__tag">${tag}</span>
-                            `).join('')}
+                    <a href="${post.url}" class="card">
+                        <span class="card__date">${formatDate(post.date)}</span>
+                        <h2 class="card__title">${post.title}</h2>
+                        <p class="card__description">${post.description}</p>
+                        <div class="tag-container">
+                            ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
                         </div>
                     </a>
                 `).join('');
                 
             } catch (error) {
                 console.error('Error loading posts:', error);
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state__icon">⚠️</div>
-                        <p>Error loading posts. Please try again later.</p>
-                    </div>
-                `;
             }
         }
         
-        // Format date to readable format
         function formatDate(dateString) {
             const date = new Date(dateString);
             return date.toLocaleDateString('en-US', { 
@@ -243,7 +125,6 @@
             });
         }
         
-        // Load posts when page loads
         loadPosts();
     </script>
 </body>
