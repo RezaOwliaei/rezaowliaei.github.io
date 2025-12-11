@@ -1,14 +1,3 @@
----
-title: "Beyond the Magic: A Beginner’s Guide to Helper Functions and Composition"
-date: 2025-12-11
-category: TypeScript
-tags:
-  - Clean Code
-  - Beginners
-  - Composition
-summary: "Master the fundamentals of explicit code structure in TypeScript by exploring helper functions and composition patterns as robust alternatives to decorators."
----
-
 # Beyond the Magic: A Beginner’s Guide to Helper Functions and Composition
 
 In the world of TypeScript, features like Decorators can automate tasks behind the scenes. While powerful, this "magic" can sometimes be difficult to understand. When things break, the lack of visibility makes debugging harder.
@@ -24,7 +13,9 @@ A **Helper Function**, by contrast, is explicit. It only runs when you call it. 
 ### Why is this better for beginners?
 
 - **No Surprises:** You can see exactly where the function is called in the code.
+    
 - **Easy to Trace:** You don't have to guess how a result was calculated. You can simply look at the line of code and follow the execution path.
+    
 
 ### The Example: Validation
 
@@ -32,7 +23,7 @@ In this example, instead of hiding validation rules inside a complex system or d
 
 Inside our `UserService`, we manually call this function.
 
-```ts
+```
 // THE HELPER FUNCTION
 // It takes a string and returns true or false. Simple.
 function isValidEmail(email: string): boolean {
@@ -77,13 +68,15 @@ In coding, we use Composition to wrap simple logic inside other functions to ext
 This technique involves creating a "wrapper" function.
 
 1. **The Core Function:** Performs the actual business logic (e.g., a calculation).
+    
 2. **The Wrapper Function:** Accepts the core function as an argument, adds extra behavior (like logging), and returns a new function.
+    
 
 #### The Example: Logging
 
 We want to log every time a function is called. Instead of writing `console.log` inside every single function, we create a generic wrapper called `withLogging`.
 
-```ts
+```
 // THE WRAPPER
 // It accepts a function 'fn' as input and returns a NEW function.
 function withLogging<Args extends any[], Return>(fn: (...args: Args) => Return) {
@@ -126,7 +119,7 @@ This approach is used for Classes. It involves creating a wrapper class that loo
 
 We use an `interface` to ensure both the Real Service and the Caching Wrapper adhere to the same contract.
 
-```ts
+```
 // THE CONTRACT
 // Both the Real service and the Caching wrapper must follow these rules.
 interface DataService {
@@ -188,40 +181,52 @@ Now that you understand the concepts, here is a practical guide on when to apply
 **Best Used For:**
 
 - **Pure Logic:** Calculations (e.g., tax, discount), string formatting (e.g., `formatDate`), or regex validation.
+    
 - **Shared Utilities:** Code that is repeated across many files (e.g., `capitalizeName`).
+    
 
 **Best Practices:**
 
 - **Keep it Pure:** Input in, output out. Avoid changing global variables inside a helper.
+    
 - **Name Clearly:** Use verbs that describe the action (e.g., `get...`, `is...`, `format...`).
+    
 
 ### Composition (Higher-Order Functions)
 
 **Best Used For:**
 
 - **Cross-Cutting Concerns:** Tasks that apply to _many_ different functions, like Logging, Error Handling, or Performance Timing.
+    
 - **Middleware:** If you have used Express.js or Redux, you have likely used this pattern to process requests before they hit your main logic.
+    
 
 **Best Practices:**
 
 - **Preserve Signatures:** Ensure the "wrapper" function accepts the same arguments and returns the same type as the original, so they are interchangeable.
+    
 
 ### Composition (Object Wrapping)
 
 **Best Used For:**
 
 - **Service Layers:** Wrapping API clients or Database repositories.
+    
 - **Feature Toggles:** Swapping between a "Real" service and a "Test" or "Mock" service for testing.
+    
 - **Resilience:** Adding "Retries" or "Circuit Breakers" to network calls without complicating the main code.
+    
 
 **Best Practices:**
 
 - **Use Interfaces:** As seen in the example (`DataService`), using an interface ensures the wrapper and the real service look identical to the rest of the application.
+    
 
 ## Quick Comparison
 
-| Approach | What is it? | Best for... |
-| --- | --- | --- |
-| **Helper Functions** | Calling a utility function explicitly. | Validation, formatting, calculations. |
-| **Composition (HOF)** | Wrapping a function inside another function. | Logging, measuring speed (performance). |
-| **Composition (Objects)** | Wrapping a class inside another class. | Caching, database connections, API calls. |
+|   |   |   |
+|---|---|---|
+|**Approach**|**What is it?**|**Best for...**|
+|**Helper Functions**|Calling a utility function explicitly.|Validation, formatting, calculations.|
+|**Composition (HOF)**|Wrapping a function inside another function.|Logging, measuring speed (performance).|
+|**Composition (Objects)**|Wrapping a class inside another class.|Caching, database connections, API calls.|

@@ -90,51 +90,222 @@
                     <h3 class="title-medium" style="margin-top: 32px;">Why is this better for beginners?</h3>
                     <ul>
                         <li class="body-medium"><strong>No Surprises:</strong> You can see exactly where the function is called in the code.</li>
-                        <li class="body-medium"><strong>Easy to Trace:</strong> You don't have to guess how a result was calculated.</li>
+                        <li class="body-medium"><strong>Easy to Trace:</strong> You don't have to guess how a result was calculated. You can simply look at the line of code and follow the execution path.</li>
                     </ul>
 
+                    <h3 class="title-medium" style="margin-top: 32px;">The Example: Validation</h3>
+                    <p class="body-medium">In this example, instead of hiding validation rules inside a complex system or decorator, we create a standalone function called <code>isValidEmail</code>. It has a single responsibility: checking if an email string is formatted correctly.</p>
+                    <p class="body-medium">Inside our <code>UserService</code>, we manually call this function.</p>
+
                     <pre><code class="language-typescript">// THE HELPER FUNCTION
+// It takes a string and returns true or false. Simple.
 function isValidEmail(email: string): boolean {
+  // A standard pattern (Regex) to check for an @ symbol and a dot.
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email);
 }
 
 class UserService {
   registerUser(email: string, name: string): void {
-    // THE EXPLICIT CHECK - No magic here
+    
+    // THE EXPLICIT CHECK
+    // We call the helper right here. If it fails, we stop.
+    // There is no ambiguity—you can see exactly why the error would be thrown.
     if (!isValidEmail(email)) {
       throw new Error("Invalid email format.");
     }
-    console.log(`User ${name} registered.`);
+    
+    // ... proceed with registration logic ...
+    console.log(`User ${name} registered with email ${email}`);
   }
-}</code></pre>
+}
+
+const service = new UserService();
+// This works perfectly
+service.registerUser("test@example.com", "Narges"); 
+
+// This will crash with "Invalid email format."
+// service.registerUser("invalid-email", "Charlie");</code></pre>
+
+                    <p class="body-medium"><strong>Key Takeaway:</strong> By using a helper function, the dependency is clear. Anyone reading <code>registerUser</code> immediately understands that the method relies on <code>isValidEmail</code> for validation.</p>
                 </section>
 
                 <section style="margin-top: 48px;">
                     <h2 class="headline-small">2. Composition: Modular Software Design</h2>
                     <p class="body-medium">Composition is the practice of combining simple, independent units of code to build more complex behavior. Rather than writing a massive, monolithic function, you build your system using smaller, reusable components.</p>
+                    <p class="body-medium">In coding, we use Composition to wrap simple logic inside other functions to extend their capabilities (such as adding logging or caching) without modifying the original code.</p>
 
-                    <h3 class="title-medium" style="margin-top: 32px;">Function Composition (Higher-Order Functions)</h3>
+                    <h3 class="title-medium" style="margin-top: 32px;">Technique A: Function Composition (Higher-Order Functions)</h3>
+                    <p class="body-medium">This technique involves creating a "wrapper" function.</p>
+                    <ol>
+                        <li class="body-medium"><strong>The Core Function:</strong> Performs the actual business logic (e.g., a calculation).</li>
+                        <li class="body-medium"><strong>The Wrapper Function:</strong> Accepts the core function as an argument, adds extra behavior (like logging), and returns a new function.</li>
+                    </ol>
+
+                    <h4 class="title-medium" style="margin-top: 24px;">The Example: Logging</h4>
                     <p class="body-medium">We want to log every time a function is called. Instead of writing <code>console.log</code> inside every single function, we create a generic wrapper called <code>withLogging</code>.</p>
-                    
-                    <pre><code class="language-typescript">function withLogging<Args extends any[], Return>(fn: (...args: Args) => Return) {
+
+                    <pre><code class="language-typescript">// THE WRAPPER
+// It accepts a function 'fn' as input and returns a NEW function.
+function withLogging&lt;Args extends any[], Return&gt;(fn: (...args: Args) => Return) {
+  
+  // This is the new function that replaces the old one
   return function (...args: Args): Return {
-    console.log(`Calling ${fn.name} with args:`, args);
-    const result = fn(...args);
-    console.log(`${fn.name} returned:`, result);
-    return result;
+    console.log(`Calling ${fn.name} with args:`, args); // 1. Do the logging
+    const result = fn(...args);                         // 2. Run the original function
+    console.log(`${fn.name} returned:`, result);        // 3. Log the result
+    return result;                                      // 4. Return the result
   };
 }
 
-function calculateDiscount(price: number, discount: number): number {
+// THE CORE LOGIC
+// This function strictly performs the calculation.
+function calculateDiscountedPrice(price: number, discount: number): number {
   return price * (1 - discount);
 }
 
-// Composition in action
-const calculateWithLog = withLogging(calculateDiscount);
-calculateWithLog(100, 0.10);</code></pre>
+// COMBINE THEM
+// We create a new function by wrapping the core logic with the logger.
+const calculatePriceWithLog = withLogging(calculateDiscountedPrice);
 
-                    <p class="body-medium"><strong>Key Takeaway:</strong> <code>calculateDiscount</code> remains pure. If you need to remove logging later, you simply stop using <code>withLogging</code>.</p>
+// Usage
+calculatePriceWithLog(100, 0.10);</code></pre>
+
+                    <p class="body-medium"><strong>Key Takeaway:</strong> <code>calculateDiscountedPrice</code> remains pure. If you need to remove logging later, you simply stop using <code>withLogging</code>. You do not need to edit the calculation logic itself.</p>
+
+                    <h3 class="title-medium" style="margin-top: 32px;">Technique B: Object Composition (The Proxy Pattern)</h3>
+                    <p class="body-medium">This approach is used for Classes. It involves creating a wrapper class that looks identical to the original class but sits between the caller and the real service.</p>
+                    <ol>
+                        <li class="body-medium"><strong>The Real Service:</strong> Performs the actual operation (e.g., fetching data).</li>
+                        <li class="body-medium"><strong>The Intermediary (Wrapper):</strong> Intercepts the call. It can decide to return data immediately (from a cache) or forward the request to the Real Service.</li>
+                    </ol>
+
+                    <h4 class="title-medium" style="margin-top: 24px;">The Example: Caching</h4>
+                    <p class="body-medium">We use an <code>interface</code> to ensure both the Real Service and the Caching Wrapper adhere to the same contract.</p>
+
+                    <pre><code class="language-typescript">// THE CONTRACT
+// Both the Real service and the Caching wrapper must follow these rules.
+interface DataService {
+    fetchData(id: number): Promise&lt;string&gt;;
+}
+
+// THE REAL WORKER
+// It handles the resource-intensive work (fetching from an API).
+class RealDataService implements DataService {
+    async fetchData(id: number): Promise&lt;string&gt; {
+        // ... actual API call logic ...
+        return `Data for ${id} from API`;
+    }
+}
+
+// THE WRAPPER (Intermediary)
+class CachingDataService implements DataService {
+    private cache: Map&lt;number, string&gt; = new Map();
+
+    // COMPOSITION HAPPENS HERE:
+    // The CachingService "has a" RealDataService inside it.
+    // It takes the real service as a parameter in the constructor.
+    constructor(private innerService: DataService) {}
+
+    async fetchData(id: number): Promise&lt;string&gt; {
+        // 1. Check if we already have the data locally
+        if (this.cache.has(id)) {
+            console.log(`Fetching ${id} from cache`);
+            return this.cache.get(id)!;
+        }
+        
+        // 2. If not, request it from the Real Service
+        console.log(`Fetching ${id} from real service`);
+        const data = await this.innerService.fetchData(id);
+        
+        // 3. Save the result for future requests
+        this.cache.set(id, data);
+        return data;
+    }
+}
+
+// Usage:
+const realService = new RealDataService();
+// We wrap the real service inside the caching service
+const cachedService = new CachingDataService(realService);
+
+cachedService.fetchData(1); // Goes to API, then caches
+cachedService.fetchData(1); // Second time: Returns directly from CachingDataService</code></pre>
+
+                    <p class="body-medium"><strong>Key Takeaway:</strong> This is powerful because <code>RealDataService</code> does not need to contain any caching logic. You can stack multiple layers—Caching, Logging, and Error Handling—without ever modifying the core API client.</p>
+                </section>
+
+                <section style="margin-top: 48px;">
+                    <h2 class="headline-small">3. Real-World Guide: Use Cases and Best Practices</h2>
+                    <p class="body-medium">Now that you understand the concepts, here is a practical guide on when to apply each tool.</p>
+
+                    <h3 class="title-medium" style="margin-top: 32px;">Helper Functions</h3>
+                    <p class="body-medium"><strong>Best Used For:</strong></p>
+                    <ul>
+                        <li class="body-medium"><strong>Pure Logic:</strong> Calculations (e.g., tax, discount), string formatting (e.g., <code>formatDate</code>), or regex validation.</li>
+                        <li class="body-medium"><strong>Shared Utilities:</strong> Code that is repeated across many files (e.g., <code>capitalizeName</code>).</li>
+                    </ul>
+
+                    <p class="body-medium"><strong>Best Practices:</strong></p>
+                    <ul>
+                        <li class="body-medium"><strong>Keep it Pure:</strong> Input in, output out. Avoid changing global variables inside a helper.</li>
+                        <li class="body-medium"><strong>Name Clearly:</strong> Use verbs that describe the action (e.g., <code>get...</code>, <code>is...</code>, <code>format...</code>).</li>
+                    </ul>
+
+                    <h3 class="title-medium" style="margin-top: 32px;">Composition (Higher-Order Functions)</h3>
+                    <p class="body-medium"><strong>Best Used For:</strong></p>
+                    <ul>
+                        <li class="body-medium"><strong>Cross-Cutting Concerns:</strong> Tasks that apply to <em>many</em> different functions, like Logging, Error Handling, or Performance Timing.</li>
+                        <li class="body-medium"><strong>Middleware:</strong> If you have used Express.js or Redux, you have likely used this pattern to process requests before they hit your main logic.</li>
+                    </ul>
+
+                    <p class="body-medium"><strong>Best Practices:</strong></p>
+                    <ul>
+                        <li class="body-medium"><strong>Preserve Signatures:</strong> Ensure the "wrapper" function accepts the same arguments and returns the same type as the original, so they are interchangeable.</li>
+                    </ul>
+
+                    <h3 class="title-medium" style="margin-top: 32px;">Composition (Object Wrapping)</h3>
+                    <p class="body-medium"><strong>Best Used For:</strong></p>
+                    <ul>
+                        <li class="body-medium"><strong>Service Layers:</strong> Wrapping API clients or Database repositories.</li>
+                        <li class="body-medium"><strong>Feature Toggles:</strong> Swapping between a "Real" service and a "Test" or "Mock" service for testing.</li>
+                        <li class="body-medium"><strong>Resilience:</strong> Adding "Retries" or "Circuit Breakers" to network calls without complicating the main code.</li>
+                    </ul>
+
+                    <p class="body-medium"><strong>Best Practices:</strong></p>
+                    <ul>
+                        <li class="body-medium"><strong>Use Interfaces:</strong> As seen in the example (<code>DataService</code>), using an interface ensures the wrapper and the real service look identical to the rest of the application.</li>
+                    </ul>
+
+                    <h2 class="headline-small" style="margin-top: 48px;">Quick Comparison</h2>
+                    <div style="overflow-x: auto; margin-top: 24px;">
+                        <table style="width: 100%; border-collapse: collapse; color: var(--md-sys-color-on-surface);">
+                            <thead>
+                                <tr style="border-bottom: 1px solid var(--md-sys-color-outline-variant);">
+                                    <th style="text-align: left; padding: 12px; font-weight: bold;">Approach</th>
+                                    <th style="text-align: left; padding: 12px; font-weight: bold;">What is it?</th>
+                                    <th style="text-align: left; padding: 12px; font-weight: bold;">Best for...</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid var(--md-sys-color-surface-variant);">
+                                    <td style="padding: 12px;"><strong>Helper Functions</strong></td>
+                                    <td style="padding: 12px;">Calling a utility function explicitly.</td>
+                                    <td style="padding: 12px;">Validation, formatting, calculations.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--md-sys-color-surface-variant);">
+                                    <td style="padding: 12px;"><strong>Composition (HOF)</strong></td>
+                                    <td style="padding: 12px;">Wrapping a function inside another function.</td>
+                                    <td style="padding: 12px;">Logging, measuring speed (performance).</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px;"><strong>Composition (Objects)</strong></td>
+                                    <td style="padding: 12px;">Wrapping a class inside another class.</td>
+                                    <td style="padding: 12px;">Caching, database connections, API calls.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </section>
             </div>
         </article>
