@@ -1,0 +1,12 @@
+{
+  "posts": [
+    {
+      "id": "helper_composition",
+      "title": "Beyond the Magic: A Beginner's Guide to Helper Functions and Composition",
+      "date": "2025-12-11",
+      "description": "Master the fundamentals of explicit code structure in TypeScript by exploring helper functions and composition patterns as robust alternatives to decorators.",
+      "tags": ["TypeScript", "Clean Code", "Helper Functions", "Object Composition", "Class Composition"],
+      "url": "./posts/helper_composition.html"
+    }
+  ]
+}
