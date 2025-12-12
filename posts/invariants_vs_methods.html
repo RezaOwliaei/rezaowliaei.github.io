@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="DDD, Domain-Driven Design, Invariants, Methods, Clean Architecture, Software Design">
+    <meta name="author" content="Reza Owliaei">
+    <meta name="description" content="Understand the critical difference between methods (capabilities) and invariants (rules) in Domain-Driven Design.">
+    <title>Beyond the Verb: Rules vs. Methods in DDD</title>
+    
+    <!-- Prism.js CSS (Atomic Theme) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/post.css">
+</head>
+<body>
+    <main class="page">
+        <!-- Navigation -->
+        <nav class="return-nav">
+            <a href="../index.html" class="nav-link">
+                <span class="material-symbols-outlined">←</span> Back to Home
+            </a>
+        </nav>
+        
+        <article class="post">
+            <header class="post-header">
+                <div class="label-large" style="color: var(--md-sys-color-primary); margin-bottom: 12px;">Architecture · Dec 12, 2025</div>
+                <h1 class="display-small" style="margin-bottom: 16px;">Beyond the Verb: Understanding Rules vs. Methods in Domain-Driven Design</h1>
+                <p class="body-large" style="color: var(--md-sys-color-on-surface-variant); margin-bottom: 24px;">In the world of software design, particularly Domain-Driven Design (DDD), we often get tangled up in the mechanics of our code. But there is a fundamental concept that sits above the code: the Invariant.</p>
+                
+                <div class="tag-container">
+                    <span class="tag">DDD</span>
+                    <span class="tag">Software Design</span>
+                    <span class="tag">Architecture</span>
+                </div>
+            </header>
+
+            <div class="post-content">
+                <section>
+                    <p class="body-large">There is a common confusion I see often: mistaking a <strong>method</strong> (something an object can do) for a <strong>rule</strong> (a constraint on what that object is allowed to be).</p>
+                    <p class="body-large">Let’s unpack the statement: <em>"A rule is a constraint on how state is allowed to change over time."</em></p>
+                </section>
+
+                <section style="margin-top: 48px;">
+                    <h2 class="headline-small">The Capability vs. The Constitution</h2>
+                    <p class="body-medium">To understand the difference, we have to look at the "verbs" of our system versus its "laws."</p>
+
+                    <h3 class="title-medium" style="margin-top: 32px;">The Method: The Capability</h3>
+                    <p class="body-medium">A method represents a capability. It is a verb. It describes an action that <em>can</em> be requested. In the real world, think of this as the steering wheel of a car. You have the capability to turn the wheel left, right, or keep it straight. You have the capability to press the gas pedal.</p>
+                    <p class="body-medium">In a software system, this looks like "Change Email Address" or "Withdraw Funds" or "Add Item to Cart." These are the buttons on the dashboard. They represent the <em>intent</em> to change the state of the system.</p>
+
+                    <h3 class="title-medium" style="margin-top: 32px;">The Invariant: The Constitution</h3>
+                    <p class="body-medium">A rule (or invariant) is not an action. It is a fact that must always be true for the system to make sense. It is the constitution that governs the system.</p>
+                    
+                    <p class="body-medium">Returning to our car analogy:</p>
+                    <ul>
+                        <li class="body-medium"><strong>Method:</strong> Press the gas pedal (The action).</li>
+                        <li class="body-medium"><strong>State Change:</strong> The car accelerates from 0 to 100 mph.</li>
+                        <li class="body-medium"><strong>The Invariant:</strong> The engine RPM cannot exceed the "Red Line" limit.</li>
+                    </ul>
+                    
+                    <p class="body-medium">The invariant isn't the act of driving; it is the physical constraint that prevents the engine from exploding while you drive. It doesn't matter how hard you press the pedal (the method); the governor (the rule) ensures the state of the engine remains within a valid range.</p>
+                </section>
+
+                <section style="margin-top: 48px;">
+                    <h2 class="headline-small">The Element of Time</h2>
+                    <p class="body-medium">The definition mentions that a rule constrains how state changes <em>over time</em>. This is the most critical part.</p>
+                    <p class="body-medium">Software objects are not static statues; they are living stories. They move from one state to another.</p>
+                    
+                    <ol>
+                        <li class="body-medium"><strong>State A (Now):</strong> The system is valid.</li>
+                        <li class="body-medium"><strong>The Event:</strong> A method is called.</li>
+                        <li class="body-medium"><strong>State B (Future):</strong> The system is... ?</li>
+                    </ol>
+
+                    <p class="body-medium">The invariant lives in that transition. It is the gatekeeper. It says, "I will allow the transition from State A to State B <em>only if</em> the new state adheres to the laws of our reality."</p>
+                    <p class="body-medium">If you have a bank account object, the method is "Transfer Money." The invariant is "You cannot spend money you do not have." The rule ensures that as time moves forward and transactions occur, the account never enters an impossible state (negative balance).</p>
+                </section>
+
+                <section style="margin-top: 48px;">
+                    <h2 class="headline-small">Why This Distinction Matters</h2>
+                    <p class="body-medium">When we treat rules as methods, we end up with "Anemic Domain Models." This is where an object is just a bag of loose data, and we rely on external services or UI logic to check the rules.</p>
+                    <p class="body-medium">If you confuse the two, you might allow the "Change Email" action to accept a string of text that has no "@" symbol. You have performed the action (the method), but you have violated the reality of what an email is (the invariant).</p>
+                    <p class="body-medium">By treating rules as constraints on change, we ensure business integrity.</p>
+                    
+                    <ul>
+                        <li class="body-medium"><strong>Methods</strong> express user intent.</li>
+                        <li class="body-medium"><strong>Invariants</strong> protect business reality.</li>
+                    </ul>
+                </section>
+
+                <section style="margin-top: 48px;">
+                    <h2 class="headline-small">Summary</h2>
+                    <p class="body-medium">Don't confuse the <strong>trigger</strong> with the <strong>safety catch</strong>.</p>
+                    
+                    <ul>
+                        <li class="body-medium">A <strong>Method</strong> is the trigger. It initiates change. It says, "I want to do X."</li>
+                        <li class="body-medium">A <strong>Rule (Invariant)</strong> is the safety catch. It validates change. It says, "You can only do X if it doesn't break Y."</li>
+                    </ul>
+
+                    <p class="body-medium">Great Domain-Driven Design isn't just about collecting a list of features (methods) your software provides. It is about deeply understanding the boundaries (invariants) that define what is impossible within your business.</p>
+                </section>
+            </div>
+        </article>
+
+        <footer class="footer">
+            <p>&copy; 2025 Reza Owliaei</p>
+            <div style="margin-top: 16px;">
+                <a href="../index.html" class="btn">Back to Blog</a>
+            </div>
+        </footer>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+</body>
+</html>

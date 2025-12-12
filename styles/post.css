@@ -1,0 +1,39 @@
+/* Blog Post Specific Overrides */
+.post-header {
+    margin: 40px 0 56px;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    padding-bottom: 32px;
+}
+
+.post-content {
+    max-width: 680px; /* Optimal reading width */
+    margin: 0 auto;
+}
+
+/* Adjust code block to match M3 surface */
+pre[class*="language-"] {
+    background: #121212 !important;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--md-sys-shape-corner-medium);
+    margin: 24px 0 32px !important;
+    padding: 24px !important;
+}
+
+code[class*="language-"] {
+    font-family: 'IBM Plex Mono', monospace !important;
+    font-size: 14px;
+}
+
+ul, ol {
+    margin-bottom: 24px;
+    padding-left: 24px;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+li {
+    margin-bottom: 8px;
+}
+
+.return-nav {
+    margin-top: 32px;
+}
